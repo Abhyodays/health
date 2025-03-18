@@ -11,19 +11,26 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../redux/store"
 import { useEffect } from "react"
-import { setMedications } from "../redux/features/medicationSlice"
+import { setMedications, setTodayProgress, setWeeklyAdherence } from "../redux/features/medicationSlice"
+import Button from "../components/Button"
+import { useNavigation } from "@react-navigation/native"
+import { BottomTabBarProps, BottomTabNavigationProp } from "@react-navigation/bottom-tabs"
+import { BottomTabsParamList } from "../router/Router"
 
 const Home = () => {
     const { theme } = useTheme()
     const dispatch = useDispatch<AppDispatch>();
     const medication = useSelector((state: RootState) => state.medication);
-    console.log(medication.todayProgress)
-    const todayProgress = medication.todayProgress.totalForToday > 0
-        ? (medication.todayProgress.takenToday / medication.todayProgress.totalForToday)
-        : 0;
+    const nextMedication = medication.medications.find(med => med.status !== "taken");
+    const navigation = useNavigation<BottomTabNavigationProp<BottomTabsParamList>>();
+    const onViewSummary = () => {
+        navigation.navigate("Summary")
+    }
 
     useEffect(() => {
         dispatch(setMedications(medicationData.medications))
+        dispatch(setTodayProgress(medicationData.todayProgress));
+        dispatch(setWeeklyAdherence(medicationData.weeklyAdherence))
     }, [dispatch])
 
     return (
@@ -36,14 +43,14 @@ const Home = () => {
             <ThemedView style={styles.today_progress_card}>
                 <ThemedText style={styles.title}>Today's Progress</ThemedText>
                 <View style={styles.progress_details}>
-                    <Circle size={75} color={common.orange} progress={todayProgress} thickness={8}
+                    <Circle size={75} color={common.orange} progress={medication.todayProgress.adherenceRate / 100} thickness={8}
                         unfilledColor={theme.colors.background.secondary} strokeCap="round"
                         showsText={true} borderWidth={0}
                         textStyle={{ ...styles.progress_text, color: theme.colors.text.primary }}
                     />
                     <View>
-                        <ThemedText style={styles.progress_details_text}>2 of 3 medications taken</ThemedText>
-                        <ThemedText style={styles.progress_details_text}>Next: Atrovastin at 3:00 PM</ThemedText>
+                        <ThemedText style={styles.progress_details_text}>{medication.todayProgress.takenToday} of {medication.todayProgress.totalForToday} medications taken</ThemedText>
+                        <ThemedText style={styles.progress_details_text}>Next: {nextMedication ? `${nextMedication?.name} at ${nextMedication?.time}` : "All medications taken"}</ThemedText>
                     </View>
                 </View>
             </ThemedView>
@@ -52,7 +59,14 @@ const Home = () => {
                 <ThemedText style={styles.title}>Timeline</ThemedText>
                 <MedicationTracker />
             </View>
-
+            <View style={styles.button_container}>
+                <Button
+                    title="View Weekly Summary"
+                    labelStyle={styles.button}
+                    backgroundColor={common.light_gray}
+                    onPress={onViewSummary}
+                />
+            </View>
         </SafeAreaView>
     )
 }
@@ -98,6 +112,15 @@ const styles = StyleSheet.create({
     },
     timeline_container: {
         paddingHorizontal: 20
+    },
+    button_container: {
+        alignItems: 'center',
+        marginTop: 50
+    },
+    button: {
+        color: common.blue,
+        fontSize: 18,
+        fontWeight: 500
     }
 })
 

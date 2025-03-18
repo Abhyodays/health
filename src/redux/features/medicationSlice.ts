@@ -40,8 +40,11 @@ const medicationSlice = createSlice({
   name: 'medication',
   initialState,
   reducers: {
+    initialize(state, action:PayloadAction<MedicationState>){
+        state = action.payload
+    },
     setMedications(state, action: PayloadAction<Medication[]>) {
-      console.log("initializing")
+      console.log("initializing", action.payload)
       state.medications = action.payload;
     },
     updateMedicationStatus(
@@ -69,7 +72,7 @@ const medicationSlice = createSlice({
   },
 });
 
-export const { setMedications, updateMedicationStatus, updateInventory, setWeeklyAdherence, setTodayProgress } =
+export const { setMedications, updateMedicationStatus, updateInventory, setWeeklyAdherence, setTodayProgress,initialize } =
   medicationSlice.actions;
 
 export default medicationSlice.reducer;

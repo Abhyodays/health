@@ -10,20 +10,22 @@ import { ScrollView } from "react-native-gesture-handler";
 import Button from "../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
-import { updateMedicationStatus } from "../redux/features/medicationSlice";
+import { setTodayProgress, updateMedicationStatus } from "../redux/features/medicationSlice";
 
 const MedicationDetails = () => {
     const route = useRoute();
     const { id } = route.params;
     const { theme } = useTheme()
     const dispatch = useDispatch<AppDispatch>();
-    const medications = useSelector((state: RootState) => state.medication.medications)
+    const medication = useSelector((state: RootState) => state.medication)
+    const medications = medication.medications;
+    const todayProgress = medication.todayProgress;
+
     const selectedMedication = medications.find(med => med.id === id);
     const isLowInventory = selectedMedication?.inventory && selectedMedication.inventory > 5 ? false : true;
     const isTaken = selectedMedication?.status === "taken";
 
     const updateStatus = () => {
-        console.log("updating status")
         dispatch(updateMedicationStatus({
             id, status: 'taken', takenAt: new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
@@ -31,6 +33,8 @@ const MedicationDetails = () => {
                 hour12: true,
             })
         }))
+        const newAdherenceRate = Math.round((todayProgress.takenToday + 1) / todayProgress.totalForToday) * 100;
+        dispatch(setTodayProgress({ ...todayProgress, takenToday: todayProgress.takenToday + 1, adherenceRate: newAdherenceRate }))
     }
     return (
         <ScrollView style={[styles.container, { backgroundColor: theme.colors.background.secondary }]}>
@@ -77,7 +81,8 @@ const MedicationDetails = () => {
                 </View>
             </RoundedCard>
             <View style={styles.button_container}>
-                <Button title={"Mark as taken"} labelStyle={{ color: 'white' }} backgroundColor={common.blue} onPress={updateStatus} />
+                <Button title={isTaken ? "Already taken" : "Mark as taken"} labelStyle={{ color: 'white' }}
+                    backgroundColor={isTaken ? common.orange : common.blue} onPress={updateStatus} disabled={isTaken} />
                 <Button title="Edit Medication" labelStyle={{ color: common.blue }} backgroundColor={common.light_gray} />
             </View>
         </ScrollView>

@@ -6,8 +6,12 @@ import { StatusBar } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 import HomeStack from "./HomeStack";
 
+export type BottomTabsParamList = {
+    HomeStack: undefined,
+    Summary: undefined
+}
 const Router = () => {
-    const Tab = createBottomTabNavigator();
+    const Tab = createBottomTabNavigator<BottomTabsParamList>();
     const { theme } = useTheme();
     return (
         <NavigationContainer>

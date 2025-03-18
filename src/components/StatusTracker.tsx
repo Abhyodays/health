@@ -47,7 +47,7 @@ const StatusTracker = () => {
                 />
             )}
 
-            {medications.map((med, index) => (
+            {medications && medications.map((med, index) => (
                 <Circle
                     key={med.id}
                     cx="10"

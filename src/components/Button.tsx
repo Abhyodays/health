@@ -4,11 +4,12 @@ type PropType = {
     title: string,
     backgroundColor: string,
     onPress?: () => void,
-    labelStyle: TextStyle
+    labelStyle: TextStyle,
+    disabled?: boolean
 }
-const Button = ({ title, onPress, backgroundColor, labelStyle }: PropType) => {
+const Button = ({ title, onPress, backgroundColor, labelStyle, disabled }: PropType) => {
     return (
-        <TouchableOpacity activeOpacity={0.5} style={[{ backgroundColor }, styles.container]} onPress={onPress}>
+        <TouchableOpacity activeOpacity={0.5} style={[{ backgroundColor }, styles.container]} onPress={onPress} disabled={disabled}>
             <View>
                 <Text style={[styles.button_text, labelStyle]}>{title}</Text>
             </View>
