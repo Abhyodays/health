@@ -1,10 +1,16 @@
 import { Text, View } from "react-native"
+import Router from "./router/Router";
+import { ThemeProvider } from "./context/ThemeContext";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const App = () => {
     return (
-        <View>
-            <Text>App</Text>
-        </View>
+        <Provider store={store}>
+            <ThemeProvider>
+                <Router />
+            </ThemeProvider>
+        </Provider>
     )
 }
 
