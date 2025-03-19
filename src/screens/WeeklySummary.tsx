@@ -32,7 +32,7 @@ const WeeklySummary = () => {
                 <ThemedText style={styles.title}>Medication Breakdown</ThemedText>
                 <FlatList
                     data={medications}
-                    renderItem={({ item }) => <CardRow title={item.name} value={item.adherence.weekly} />}
+                    renderItem={({ item }) => <CardRow title={item.name} value={`${item.adherence.weekly}%`} />}
                     keyExtractor={(item) => item.id}
                 />
             </RoundedCard>
